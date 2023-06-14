@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect,useState } from "react";
 import { useRouter } from "next/router";
 import {ReactSortable} from "react-sortablejs";
+import Spinner from "@/components/Spinner";
 
 
 export default function ProductForm({_id, title: existingTitle, description:existingDescription, price: existingPrice,  images:existingImages}) {
@@ -15,7 +16,7 @@ export default function ProductForm({_id, title: existingTitle, description:exis
 
   async function saveProduct(ev) {
     ev.preventDefault();
-    const data = { title, description, price };
+    const data = { title, description, price, images };
     if(_id){
       //update
       await axios.put('/api/products', {...data, _id})
