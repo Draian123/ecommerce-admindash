@@ -4,7 +4,7 @@ import fs from 'fs';
 import mime from 'mime-types';
 import {mongooseConnect} from "@/lib/mongoose";
 import {isAdminRequest} from "@/pages/api/auth/[...nextauth]";
-const bucketName = 'dawid-next-ecommerce';
+const bucketName = 'dennis-next-ecommerce';
 
 export default async function handle(req,res) {
   await mongooseConnect();
@@ -18,13 +18,13 @@ export default async function handle(req,res) {
     });
   });
   console.log('length:', files.file.length);
-  // const client = new S3Client({
-  //   region: 'us-east-1',
-  //   credentials: {
-  //     accessKeyId: process.env.S3_ACCESS_KEY,
-  //     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-  //   },
-  // });
+  const client = new S3Client({
+    region: 'eu-central-1',
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    },
+  });
   const links = [];
   for (const file of files.file) {
     const ext = file.originalFilename.split('.').pop();
