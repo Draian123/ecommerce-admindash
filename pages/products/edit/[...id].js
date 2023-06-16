@@ -8,13 +8,10 @@ export default function EditProductPage() {
   const [productInfo, setProductInfo] = useState(null);
   const router = useRouter();
   const {id} = router.query;
-  console.log(id)
-  
   useEffect(() => {
     if (!id) {
       return;
     }
-    //error happening here cause 2 responses to 1 request
     axios.get('/api/products?id='+id).then(response => {
       setProductInfo(response.data);
     });
