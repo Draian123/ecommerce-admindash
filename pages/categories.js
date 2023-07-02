@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import { withSwal } from 'react-sweetalert2';
+import Spinner from "@/components/Spinner";
 
 function Categories({swal}) {
   const [editedCategory, setEditedCategory] = useState(null);
@@ -9,12 +10,15 @@ function Categories({swal}) {
   const [parentCategory,setParentCategory] = useState('');
   const [categories,setCategories] = useState([]);
   const [properties,setProperties] = useState([]);
+  const [isLoading,setIsLoading] = useState(false);
   useEffect(() => {
     fetchCategories();
   }, [])
   function fetchCategories() {
+    setIsLoading(true);
     axios.get('/api/categories').then(result => {
       setCategories(result.data);
+      setIsLoading(false);
     });
   }
   async function saveCategory(ev){
@@ -72,14 +76,14 @@ function Categories({swal}) {
       return [...prev, {name:'',values:''}];
     });
   }
-  function handlePropertyNameChange(index,newName) {
+  function handlePropertyNameChange(index,property,newName) {
     setProperties(prev => {
       const properties = [...prev];
       properties[index].name = newName;
       return properties;
     });
   }
-  function handlePropertyValuesChange(index,newValues) {
+  function handlePropertyValuesChange(index,property,newValues) {
     setProperties(prev => {
       const properties = [...prev];
       properties[index].values = newValues;
@@ -113,7 +117,7 @@ function Categories({swal}) {
                   value={parentCategory}>
             <option value="">No parent category</option>
             {categories.length > 0 && categories.map(category => (
-              <option key={category._id} value={category._id}>{category.name}</option>
+              <option value={category._id}>{category.name}</option>
             ))}
           </select>
         </div>
@@ -126,18 +130,18 @@ function Categories({swal}) {
             Add new property
           </button>
           {properties.length > 0 && properties.map((property,index) => (
-            <div key={property.name} className="flex gap-1 mb-2">
+            <div className="flex gap-1 mb-2">
               <input type="text"
                      value={property.name}
                      className="mb-0"
-                     onChange={ev => handlePropertyNameChange(index,ev.target.value)}
+                     onChange={ev => handlePropertyNameChange(index,property,ev.target.value)}
                      placeholder="property name (example: color)"/>
               <input type="text"
                      className="mb-0"
                      onChange={ev =>
                        handlePropertyValuesChange(
                          index,
-                         ev.target.value
+                         property,ev.target.value
                        )}
                      value={property.values}
                      placeholder="values, comma separated"/>
@@ -178,8 +182,17 @@ function Categories({swal}) {
           </tr>
           </thead>
           <tbody>
+          {isLoading && (
+            <tr>
+              <td colSpan={3}>
+                <div className="py-4">
+                  <Spinner fullWidth={true} />
+                </div>
+              </td>
+            </tr>
+          )}
           {categories.length > 0 && categories.map(category => (
-            <tr key={category._id}>
+            <tr>
               <td>{category.name}</td>
               <td>{category?.parent?.name}</td>
               <td>
